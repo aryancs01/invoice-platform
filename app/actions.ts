@@ -5,8 +5,8 @@ import { parseWithZod } from "@conform-to/zod"
 import { invoiceSchema, onboardiingSchema } from "./utils/zodSchemas"
 import { prisma } from "./utils/db"
 import { redirect } from "next/navigation"
-import { emailClient } from "./utils/mailtrap"
 import { formatCurrency } from "./utils/formatCurrency"
+import { sendEmail, sendUpdatedEmail } from "./utils/sendEmails"
 
 export async function onboardUser(prevState: any, formData: FormData) {
     const session = await requireUser()
@@ -66,37 +66,20 @@ export async function createInvoice(prevState: any, formData: FormData) {
             userId: session.user?.id
         }
     })
-
-    const sender = {
-        email: "hello@demomailtrap.co",
-        name: "Mailtrap Test",
-    };
-
-
-    emailClient.send({
-        from: sender,
-        to: [{ email: "aryan1032saxena@gmail.com" }],
-        template_uuid: "39e359fa-15d5-4867-8e6e-471033f8111c",
-        template_variables: {
-            "clientName": submission.value.clientName,
-            "invoiceNumber": submission.value.invoiceNumber,
-            "dueDate": new Intl.DateTimeFormat("en-US", {
-                dateStyle: "long"
-            }).format(new Date(submission.value.date)),
-            "totalAmount": formatCurrency({
-                amount: submission.value.total,
-                currency: submission.value.currency as any
-            }),
-            invoiceLink: 
-            process.env.NODE_ENV !=='production'
-            ? `http://localhost:3000/api/invoice/${data.id}`:
-             `https://invoice-platform-nine.vercel.app/api/invoice/${data.id}`
-        }
+    
+    await sendEmail({
+        to:data.clientEmail,
+        clientName:data.clientName,
+        invoiceNumber:data.invoiceNumber,
+        dueDate:data.dueDate.toString(),
+        totalAmount:formatCurrency({
+            amount:data.total,
+            currency:data.currency as any
+        }),
+        invoiceLink:`http://localhost:3000/api/invoice/${data.id}`
     })
 
     return redirect("/dashboard/invoices")
-
-
 }
 
 export async function editInvoice(prevState: any, formData: FormData) {
@@ -136,29 +119,16 @@ export async function editInvoice(prevState: any, formData: FormData) {
         }
     })
 
-    const sender = {
-        email: "hello@demomailtrap.co",
-        name: "Invoice Platfrom",
-    };
-
-    emailClient.send({
-        from: sender,
-        to: [{ email: "aryan1032saxena@gmail.com" }],
-        template_uuid: "b5cf0e69-e5fa-48d1-9fae-c2d11c4372a5",
-        template_variables: {
-            "clientName": submission.value.clientName,
-            "invoiceNumber": submission.value.invoiceNumber,
-            "dueDate": new Intl.DateTimeFormat("en-US", {
-                dateStyle: "long"
-            }).format(new Date(submission.value.date)),
-            "totalAmount": formatCurrency({
-                amount: submission.value.total,
-                currency: submission.value.currency as any
-            }),
-            invoiceLink: process.env.NODE_ENV !=='production'
-            ? `http://localhost:3000/api/invoice/${data.id}`:
-             `https://invoice-platform-nine.vercel.app/api/invoice/${data.id}`
-        }
+    await sendUpdatedEmail({
+        to:data.clientEmail,
+        clientName:data.clientName,
+        invoiceNumber:data.invoiceNumber,
+        dueDate:data.dueDate.toString(),
+        totalAmount:formatCurrency({
+            amount:data.total,
+            currency:data.currency as any
+        }),
+       invoiceLink:`http://localhost:3000/api/invoice/${data.id}`
     })
 
     return redirect("/dashboard/invoices")

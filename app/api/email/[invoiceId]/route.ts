@@ -1,6 +1,7 @@
 import { prisma } from "@/app/utils/db";
+import { formatCurrency } from "@/app/utils/formatCurrency";
 import { requireUser } from "@/app/utils/hooks";
-import { emailClient } from "@/app/utils/mailtrap";
+import { sendReminderEmail, transport } from "@/app/utils/sendEmails";
 import { NextResponse } from "next/server";
 
 type Params = Promise<{ invoiceId: string }>
@@ -22,21 +23,15 @@ export async function POST(req: Request, { params }: { params: Params }) {
             }, { status: 404 })
         }
 
-        const sender = {
-            email: "hello@demomailtrap.co",
-            name: "Invoice Platfrom",
-        };
-
-        emailClient.send({
-            from: sender,
-            to: [{ email: "aryan1032saxena@gmail.com" }],
-            template_uuid: "cfbbe16b-a1ea-4c81-be93-6c4ed2b5ac94",
-            template_variables: {
-                "first_name": "Aryan",
-                "company_info_name": "Invoice Generate",
-                "company_info_city": "Jaipur",
-                "company_info_country": "India"
-            }
+        await sendReminderEmail({
+            to:invoiceData.clientEmail,
+            clientName:invoiceData.clientName,
+            invoiceNumber:invoiceData.invoiceNumber,
+            dueDate:invoiceData.dueDate.toString(),
+            totalAmount:formatCurrency({
+                amount:invoiceData.total,
+                currency:invoiceData.currency as any
+            })
         })
 
         return NextResponse.json({
