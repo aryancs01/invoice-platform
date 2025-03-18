@@ -297,7 +297,7 @@ export async function sendEmail({ to, clientName, invoiceNumber, dueDate, totalA
             .replace("{{invoiceLink}}", invoiceLink);
 
         const info = await transport.sendMail({
-            from: "aryansaxenacs@gmail.com",
+            from: "nothingkrs@gmail.com",
             to,
             subject: "Invoice of your purchased item",
             html: htmlContent,
@@ -326,7 +326,7 @@ export async function sendUpdatedEmail({ to, clientName, invoiceNumber, dueDate,
             .replace("{{invoiceLink}}", invoiceLink);
 
         const info = await transport.sendMail({
-            from: "aryansaxenacs@gmail.com",
+            from: "nothingkrs@gmail.com",
             to,
             subject: "Updated Invoice of your purchased item",
             html: htmlContent,
@@ -353,7 +353,7 @@ export async function sendReminderEmail({ to, clientName, invoiceNumber, dueDate
           .replaceAll("{{totalAmount}}", totalAmount)
 
       const info = await transport.sendMail({
-          from: "aryansaxenacs@gmail.com",
+          from: "nothingkrs@gmail.com",
           to,
           subject: "Payment Overdue for Invoice",
           html: htmlContent,
