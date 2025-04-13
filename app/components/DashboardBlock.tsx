@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ActivityIcon, CreditCard, DollarSign, Users } from "lucide-react";
+import { ActivityIcon, CreditCard, IndianRupee, Users } from "lucide-react";
 import { prisma } from "../utils/db";
 import { requireUser } from "../utils/hooks";
 import { formatCurrency } from "../utils/formatCurrency";
@@ -51,7 +51,7 @@ export async function DashboardBlocks(){
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm">Total Revenue</CardTitle>
-                    <DollarSign className="size-4 text-muted-foreground"/>
+                    <IndianRupee className="size-4 text-muted-foreground"/>
                 </CardHeader>
                 <CardContent>
                     <h2 className="text-2xl font-bold">
